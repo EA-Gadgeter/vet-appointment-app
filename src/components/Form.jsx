@@ -8,6 +8,7 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  SafeAreaView,
 } from "react-native";
 
 import DatePicker from "react-native-date-picker";
@@ -18,6 +19,7 @@ const Form = ({
   pacientes,
   setPacientes,
   pacienteAEditar,
+  setPacienteAEditar,
 }) => {
   const [id, setId] = React.useState("");
 
@@ -42,6 +44,14 @@ const Form = ({
 
   const closeModal = () => {
     setModalVisible(false);
+    setId("");
+    setPacienteAEditar({});
+    setPaciente("");
+    setPropietario("");
+    setTelefono("");
+    setEmail("");
+    setfechaAlta(new Date());
+    setSintomas("");
   };
 
   const handleCita = () => {
@@ -52,7 +62,6 @@ const Form = ({
     }
 
     const nuevoPaciente = {
-      id: Date.now(),
       paciente,
       propietario,
       email,
@@ -61,104 +70,112 @@ const Form = ({
       sintomas,
     };
 
-    setPacientes([...pacientes, nuevoPaciente]);
-    closeModal();
+    if (id) {
+      nuevoPaciente.id = id;
+      const pacientesActualizados = pacientes.map((pacienteState) =>
+        pacienteState.id === nuevoPaciente.id ? nuevoPaciente : pacienteState
+      );
+      setPacientes(pacientesActualizados);
+    } else {
+      nuevoPaciente.id = Date.now();
+      setPacientes([...pacientes, nuevoPaciente]);
+    }
 
-    setPaciente("");
-    setPropietario("");
-    setEmail("");
-    setfechaAlta(new Date());
-    setSintomas("");
+    closeModal();
   };
 
   return (
     <Modal animationType="slide" visible={modalVisible}>
-      <ScrollView style={styles.contenido}>
-        <Text style={styles.titulo}>
-          Nueva {""}
-          <Text style={styles.tituloBold}>Cita</Text>
-        </Text>
+      <SafeAreaView style={styles.contenido}>
+        <ScrollView>
+          <Text style={styles.titulo}>
+            {pacienteAEditar.id ? "Editar" : "Nueva"} {""}
+            <Text style={styles.tituloBold}>Cita</Text>
+          </Text>
 
-        <Pressable onPress={closeModal} style={styles.btnCancelar}>
-          <Text style={styles.btnCancelarTexto}>X Cancelar</Text>
-        </Pressable>
+          <Pressable onPress={closeModal} style={styles.btnCancelar}>
+            <Text style={styles.btnCancelarTexto}>X Cancelar</Text>
+          </Pressable>
 
-        <View style={styles.campo}>
-          <Text style={styles.label}>Nombre Paciente</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre Paciente"
-            placeholderTextColor={"#666"}
-            value={paciente}
-            onChangeText={setPaciente}
-          />
-        </View>
-
-        <View style={styles.campo}>
-          <Text style={styles.label}>Nombre Propietario</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre Propietario"
-            placeholderTextColor={"#666"}
-            value={propietario}
-            onChangeText={setPropietario}
-          />
-        </View>
-
-        <View style={styles.campo}>
-          <Text style={styles.label}>Email Propietario</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="email-address"
-            placeholder="ejemplo@gmail.com"
-            placeholderTextColor={"#666"}
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
-
-        <View style={styles.campo}>
-          <Text style={styles.label}>Teléfono Propietario</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="number-pad"
-            placeholder="555 555 5555"
-            placeholderTextColor={"#666"}
-            maxLength={10}
-            value={telefono}
-            onChangeText={setTelefono}
-          />
-        </View>
-
-        <View style={styles.campo}>
-          <Text style={styles.label}>Fecha de Alta</Text>
-          <View style={styles.contenedorDatePicker}>
-            <DatePicker
-              date={fechaAlta}
-              locale="es"
-              androidVariant="nativeAndroid"
-              onDateChange={setfechaAlta}
+          <View style={styles.campo}>
+            <Text style={styles.label}>Nombre Paciente</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nombre Paciente"
+              placeholderTextColor={"#666"}
+              value={paciente}
+              onChangeText={setPaciente}
             />
           </View>
-        </View>
 
-        <View style={styles.campo}>
-          <Text style={styles.label}>Síntomas Paciente</Text>
-          <TextInput
-            style={[styles.input, styles.sintomasInput]}
-            placeholder="Sintomas Paciente"
-            placeholderTextColor={"#666"}
-            multiline={true}
-            numberOfLines={4}
-            value={sintomas}
-            onChangeText={setSintomas}
-          />
-        </View>
+          <View style={styles.campo}>
+            <Text style={styles.label}>Nombre Propietario</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nombre Propietario"
+              placeholderTextColor={"#666"}
+              value={propietario}
+              onChangeText={setPropietario}
+            />
+          </View>
 
-        <Pressable onPress={handleCita} style={styles.btnNuevaCita}>
-          <Text style={styles.btnNuevaCitaTexto}>Agregar Paciente</Text>
-        </Pressable>
-      </ScrollView>
+          <View style={styles.campo}>
+            <Text style={styles.label}>Email Propietario</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="email-address"
+              placeholder="ejemplo@gmail.com"
+              placeholderTextColor={"#666"}
+              value={email}
+              onChangeText={setEmail}
+            />
+          </View>
+
+          <View style={styles.campo}>
+            <Text style={styles.label}>Teléfono Propietario</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="number-pad"
+              placeholder="555 555 5555"
+              placeholderTextColor={"#666"}
+              maxLength={10}
+              value={telefono}
+              onChangeText={setTelefono}
+            />
+          </View>
+
+          <View style={styles.campo}>
+            <Text style={styles.label}>Fecha de Alta</Text>
+            <View style={styles.contenedorDatePicker}>
+              <DatePicker
+                date={fechaAlta}
+                locale="es"
+                androidVariant="nativeAndroid"
+                onDateChange={setfechaAlta}
+              />
+            </View>
+          </View>
+
+          <View style={styles.campo}>
+            <Text style={styles.label}>Síntomas Paciente</Text>
+            <TextInput
+              style={[styles.input, styles.sintomasInput]}
+              placeholder="Sintomas Paciente"
+              placeholderTextColor={"#666"}
+              multiline={true}
+              numberOfLines={4}
+              value={sintomas}
+              onChangeText={setSintomas}
+            />
+          </View>
+
+          <Pressable onPress={handleCita} style={styles.btnNuevaCita}>
+            <Text style={styles.btnNuevaCitaTexto}>
+              {pacienteAEditar.id ? "Modificar" : "Agregar Paciente"}
+            </Text>
+          </Pressable>
+        </ScrollView>
+      </SafeAreaView>
     </Modal>
   );
 };

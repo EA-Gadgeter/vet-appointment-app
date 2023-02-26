@@ -6,19 +6,47 @@ import {
   Pressable,
   Platform,
   FlatList,
+  Alert,
+  Modal,
 } from "react-native";
 
 import Form from "./src/components/Form";
 import Paciente from "./src/components/Paciente";
+import InformacionPaciente from "./src/components/InformacionPaciente";
 
 const App = () => {
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [modalPaciente, setModalPaciente] = React.useState(false);
   const [pacientes, setPacientes] = React.useState([]);
   const [paciente, setPaciente] = React.useState({});
 
   const pacienteEditar = (id) => {
-    const pacienteAEditar = pacientes.filter((item) => item.id === id);
+    const pacienteAEditar = pacientes.filter(
+      (pacienteF) => pacienteF.id === id
+    );
     setPaciente(pacienteAEditar[0]);
+  };
+
+  const pacienteEliminar = (id) => {
+    const eliminar = () => {
+      const pacientesActualizados = pacientes.filter(
+        (pacienteF) => pacienteF.id !== id
+      );
+
+      setPacientes(pacientesActualizados);
+    };
+
+    Alert.alert(
+      "¿Deseas eliminar este paciente?",
+      "Un paciente eliminado no se puede recuperar.",
+      [
+        { text: "Cancelar" },
+        {
+          text: "Si, Eliminar",
+          onPress: eliminar,
+        },
+      ]
+    );
   };
 
   const nuevaCitaHandler = () => {
@@ -49,19 +77,33 @@ const App = () => {
                 item={item}
                 setModalVisible={setModalVisible}
                 pacienteEditar={pacienteEditar}
+                setPaciente={setPaciente}
+                pacienteEliminar={pacienteEliminar}
+                setModalPaciente={setModalPaciente}
               />
             );
           }}
         />
       )}
 
-      <Form
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        pacientes={pacientes}
-        setPacientes={setPacientes}
-        pacienteAEditar={paciente}
-      />
+      {modalVisible && (
+        <Form
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          pacientes={pacientes}
+          setPacientes={setPacientes}
+          pacienteAEditar={paciente}
+          setPacienteAEditar={setPaciente}
+        />
+      )}
+
+      <Modal visible={modalPaciente} animationType="slide">
+        <InformacionPaciente
+          paciente={paciente}
+          setPaciente={setPaciente}
+          setModalPaciente={setModalPaciente}
+        />
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -106,7 +148,7 @@ const styles = StyleSheet.create({
   noPacientesText: {
     marginTop: 40,
     fontSize: 24,
-    fontWeight: 600,
+    fontWeight: "600",
     textAlign: "center",
   },
 
