@@ -1,0 +1,12 @@
+{
+    "root": true,
+    "parser": "@babel/eslint-parser",
+    "extends": "@react-native-community",
+    "rules": {
+        "quotes": ["error", "double"],
+        "prettier/prettier": 
+        [ 
+            "error",{ "endOfLine": "auto"}
+        ]
+    }
+}
